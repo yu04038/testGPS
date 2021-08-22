@@ -1,27 +1,30 @@
 package com.example.test;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.ActivityTransition;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -29,8 +32,13 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCanceledListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import net.daum.mf.map.api.MapPoint;
@@ -41,22 +49,27 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
+import static android.telephony.CellLocation.requestLocationUpdate;
+
 public class MainActivity extends AppCompatActivity implements MapView.CurrentLocationEventListener, MapReverseGeoCoder.ReverseGeoCodingResultListener {
 
+    protected GoogleApiClient mGoogleApiClient;
     private MapView mMapView;
     private TextView text_longitude, text_latitude;
     private FusedLocationProviderClient mFusedLocationClient;
-    private LocationRequest locationRequest;
+    private LocationCallback mLocationCallback;
+    private LocationRequest mLocationRequest;
+    private SettingsClient mSettingsClient;
+    private LocationSettingsRequest mLocationSettingsRequest;
+    private Context context;
     private Location location;
     private MapPoint mCurrentLocation;
-    private static final String LOG_TAG = "MainActivity";
-    private static String TAG = "My tag";
+    private String latitude = "0.0", longitude = "0.0";
+    private final String TAG = "BackgroundLocationUpdateService";
+    private final String TAG_LOCATION = "TAG_LOCATION";
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
     private static final int PERMISSIONS_REQUEST_CODE = 100;
-    private static final int UPDATE_INTERVAL_MS = 1000;  // 1초
-    private static final int FASTEST_UPDATE_INTERVAL_MS = 500; // 0.5초
 
-    LatLng currentPosition;
     String[] REQUIRED_PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION};
 
     @Override
@@ -67,28 +80,8 @@ public class MainActivity extends AppCompatActivity implements MapView.CurrentLo
         mMapView = (MapView) findViewById(R.id.map_view);
         mMapView.setCurrentLocationEventListener(this);
 
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+//        startService(new Intent(this, BackgroundLocationUpdateService.class));
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        mFusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                if (location != null) {
-                    location.getLatitude();
-                    location.getLongitude();
-                    Log.d(TAG, String.valueOf(location.getLatitude()) + String.valueOf(location.getLongitude()));
-                }
-            }
-        });
         if (!checkLocationServicesStatus()) {
             showDialogForLocationServiceSetting();
         } else {
@@ -106,14 +99,16 @@ public class MainActivity extends AppCompatActivity implements MapView.CurrentLo
     @Override
     public void onCurrentLocationUpdate(MapView mapView, MapPoint currentLocation, float accuracyInMeters) {
         MapPoint.GeoCoordinate mapPointGeo = currentLocation.getMapPointGeoCoord();
+
+//        mCurrentLocation = currentLocation;
+//        Log.e(LOG_TAG, String.format("MapView onCurrentLocationUpdate (%f, %f) accuracy (%f)",
+//                mapPointGeo.latitude, mapPointGeo.longitude, accuracyInMeters));
+
         text_latitude = (TextView) findViewById(R.id.text_latitude);
         text_longitude = (TextView) findViewById(R.id.text_longitude);
         text_latitude.setText(String.valueOf(mapPointGeo.latitude));
         text_longitude.setText(String.valueOf(mapPointGeo.longitude));
 
-        mCurrentLocation = currentLocation;
-        Log.e(LOG_TAG, String.format("MapView onCurrentLocationUpdate (%f, %f) accuracy (%f)",
-                mapPointGeo.latitude, mapPointGeo.longitude, accuracyInMeters));
     }
 
     @Override
