@@ -16,7 +16,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
-import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.ActivityTransition;
@@ -31,19 +31,17 @@ import java.security.NoSuchAlgorithmException;
 public class MainActivity extends AppCompatActivity implements MapView.CurrentLocationEventListener, MapReverseGeoCoder.ReverseGeoCodingResultListener {
 
     private MapView mMapView;
+    private TextView text_longitude, text_latitude;
     private static final String LOG_TAG = "MainActivity";
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
     private static final int PERMISSIONS_REQUEST_CODE = 100;
     String[] REQUIRED_PERMISSIONS  = {Manifest.permission.ACCESS_FINE_LOCATION};
-    MockLocationProvider mock;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mock = new MockLocationProvider(LocationManager.NETWORK_PROVIDER, this);
         getHashKey();
-        mock.pushLocation(35, 127);
         mMapView = (MapView) findViewById(R.id.map_view);
         mMapView.setCurrentLocationEventListener(this);
 
@@ -64,6 +62,10 @@ public class MainActivity extends AppCompatActivity implements MapView.CurrentLo
     @Override
     public void onCurrentLocationUpdate(MapView mapView, MapPoint currentLocation, float accuracyInMeters) {
         MapPoint.GeoCoordinate mapPointGeo = currentLocation.getMapPointGeoCoord();
+        text_latitude = (TextView) findViewById(R.id.text_latitude);
+        text_longitude = (TextView) findViewById(R.id.text_longitude);
+        text_latitude.setText(String.valueOf(mapPointGeo.latitude));
+        text_longitude.setText(String.valueOf(mapPointGeo.longitude));
         Log.i(LOG_TAG, String.format("MapView onCurrentLocationUpdate (%f, %f) accuracy (%f)",
                 mapPointGeo.latitude, mapPointGeo.longitude, accuracyInMeters));
     }
