@@ -13,6 +13,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -42,8 +43,27 @@ import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.gson.Gson;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class BackgroundLocationUpdateService extends Service implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
@@ -62,6 +82,8 @@ public class BackgroundLocationUpdateService extends Service implements GoogleAp
     private LocationRequest mLocationRequest;
     private Location mCurrentLocation;
     /* For Google Fused API */
+
+    public static String SERVER_ADRESS = "http://3.38.11.108:8080";
 
     @Override
     public void onCreate() {
@@ -118,32 +140,6 @@ public class BackgroundLocationUpdateService extends Service implements GoogleAp
     private void StartForeground() {
         Intent intent = new Intent(context, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent, PendingIntent.FLAG_ONE_SHOT);
-
-        String CHANNEL_ID = "channel_location";
-        String CHANNEL_NAME = "channel_location";
-
-        NotificationCompat.Builder builder = null;
-        NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
-            channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
-            notificationManager.createNotificationChannel(channel);
-            builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID);
-            builder.setChannelId(CHANNEL_ID);
-            builder.setBadgeIconType(NotificationCompat.BADGE_ICON_NONE);
-        } else {
-            builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID);
-        }
-
-        builder.setContentTitle("Your title");
-        builder.setContentText("You are now online");
-        Uri notificationSound = RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_NOTIFICATION);
-        builder.setSound(notificationSound);
-        builder.setAutoCancel(true);
-        builder.setContentIntent(pendingIntent);
-        Notification notification = builder.build();
-        startForeground(101, notification);
     }
 
     @Override
@@ -156,7 +152,33 @@ public class BackgroundLocationUpdateService extends Service implements GoogleAp
         if (latitude.equalsIgnoreCase("0.0") && longitude.equalsIgnoreCase("0.0")) {
             requestLocationUpdate();
         } else {
-            Log.e(TAG_LOCATION, "Latitude : " + location.getLatitude() + "\tLongitude : " + location.getLongitude());
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl("http://3.38.11.108:8080")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            RetrofitApi retrofitApi = retrofit.create(RetrofitApi.class);
+            HashMap<String, Object> input = new HashMap<>();
+            input.put("latitude", location.getLatitude());
+            input.put("longitude", location.getLongitude());
+            input.put("name", location.getProvider());
+
+            retrofitApi.postData(input).enqueue(new Callback<com.example.test.Location>() {
+                @Override
+                public void onResponse(Call<com.example.test.Location> call, Response<com.example.test.Location> response) {
+                    if (response.isSuccessful()) {
+                        com.example.test.Location data = response.body();
+                        Log.d("Test", "Post 성공");
+                        Log.d("Test", String.valueOf(data.getStatus()));
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<com.example.test.Location> call, Throwable t) {
+
+                }
+            });
+            Log.e(TAG_LOCATION, "Latitude : " + location.getLatitude() + "\tLongitude : " + location.getLongitude() + "\tProvider : " + location.getProvider());
         }
     }
 
@@ -266,4 +288,6 @@ public class BackgroundLocationUpdateService extends Service implements GoogleAp
     private void requestLocationUpdate() {
         mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
     }
+
+
 }

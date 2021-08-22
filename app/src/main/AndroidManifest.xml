@@ -18,9 +18,9 @@
         android:theme="@style/Theme.Test"
         android:usesCleartextTraffic="true">
         <service
-            android:name=".BackgroundLocationUpdateService"
-            android:enabled="true"
-            android:exported="true"></service>
+            android:name=".BackgroundLocationUpdateService">
+
+        </service>
 
         <activity android:name=".MainActivity">
             <intent-filter>
