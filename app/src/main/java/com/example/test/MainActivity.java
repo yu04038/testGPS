@@ -17,6 +17,8 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,12 +39,28 @@ import java.security.NoSuchAlgorithmException;
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_LOCATION_PERMISSION = 1;
+    private EditText etName;
+    private Button nameOK;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getHashKey();
+
+        etName = (EditText)findViewById(R.id.etProvider);
+        nameOK = (Button)findViewById(R.id.nameOK);
+        nameOK.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String name = etName.getText().toString();
+
+                Intent intent = new Intent(getApplicationContext(), LocationService.class);
+                intent.putExtra("name", name);
+                startService(intent);
+            }
+        });
+
 
         findViewById(R.id.buttonStartLocationUpdates).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,8 +133,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Location Service Stopped", Toast.LENGTH_SHORT).show();
         }
     }
-
-
 
     private void getHashKey() {
         PackageInfo packageInfo = null;

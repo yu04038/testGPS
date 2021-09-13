@@ -4,20 +4,59 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:orientation="vertical"
     tools:context=".MainActivity">
-
-    <Button
-        android:layout_width="wrap_content"
+    
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/buttonStartLocationUpdates"
-        android:text="Start Location Updates"
-        android:backgroundTint="#5A5A5A"/>
+        android:orientation="vertical">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/buttonStopLocationUpdates"
-        android:text="Stop Location Updates"
-        android:backgroundTint="#5A5A5A"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/etProvider"
+                android:text="Write your name"
+                android:textSize="60px"
+                android:enabled="true"
+                android:textColorHint="#5a5a5a"
+                android:inputType="textPersonName"/>
+
+            <Button
+                android:layout_marginLeft="20px"
+                android:id="@+id/nameOK"
+                android:layout_width="160px"
+                android:layout_height="120px"
+                android:backgroundTint="#5a5a5a"
+                android:text="확인" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/buttonStartLocationUpdates"
+                android:text="Start Location Updates"
+                android:backgroundTint="#5A5A5A"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/buttonStopLocationUpdates"
+                android:text="Stop Location Updates"
+                android:backgroundTint="#5A5A5A"/>
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>
