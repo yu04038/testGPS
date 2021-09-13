@@ -3,16 +3,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="match_parent"
+    <Button
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:id="@+id/text_location">
+        android:id="@+id/buttonStartLocationUpdates"
+        android:text="Start Location Updates"
+        android:backgroundTint="#5A5A5A"/>
 
-    </TextView>
-
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonStopLocationUpdates"
+        android:text="Stop Location Updates"
+        android:backgroundTint="#5A5A5A"/>
 </LinearLayout>
