@@ -22,7 +22,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/etProvider"
-                android:text="Write your name"
+                android:hint="Write your name"
                 android:textSize="60px"
                 android:enabled="true"
                 android:textColorHint="#5a5a5a"

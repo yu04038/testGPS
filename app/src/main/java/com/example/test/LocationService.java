@@ -38,6 +38,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LocationService extends Service {
 
+    private String name;
+
+
     private LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(@NonNull LocationResult locationResult) {
@@ -46,13 +49,13 @@ public class LocationService extends Service {
                 double latitude = locationResult.getLastLocation().getLatitude();
                 double longitude = locationResult.getLastLocation().getLongitude();
                 String speed = String.valueOf(locationResult.getLastLocation().getSpeed()) + " km/h";
-                String provider = locationResult.getLastLocation().getProvider();
-                Log.e("LOCATION_UPDATE", latitude + ", " + longitude + ", " + speed + ", " + provider);
+
+                Log.e("LOCATION_UPDATE", latitude + ", " + longitude + ", " + speed + ", " + name);
 
                 HashMap<String, Object> input = new HashMap<>();
                 input.put("latitude", latitude);
                 input.put("longitude", longitude);
-                input.put("name", provider);
+                input.put("name", name);
 
                 Retrofit retrofit = new Retrofit.Builder()
                         .baseUrl("http://3.38.11.108:8080")
@@ -158,6 +161,7 @@ public class LocationService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
             String action = intent.getAction();
+            name = intent.getStringExtra("name");
             if(action != null) {
                 if(action.equals(Constants.ACTION_START_LOCATION_SERVICE)) {
                     startLocationService();
@@ -168,10 +172,4 @@ public class LocationService extends Service {
         }
         return super.onStartCommand(intent, flags, startId);
     }
-
-    private void processCommand(Intent intent) {
-        String name = intent.getStringExtra("name");
-    }
-
-
 }

@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.app.ActivityManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -41,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_LOCATION_PERMISSION = 1;
     private EditText etName;
     private Button nameOK;
+    private String name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,11 +55,9 @@ public class MainActivity extends AppCompatActivity {
         nameOK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String name = etName.getText().toString();
+                name = etName.getText().toString();
 
-                Intent intent = new Intent(getApplicationContext(), LocationService.class);
-                intent.putExtra("name", name);
-                startService(intent);
+                Toast.makeText(getApplicationContext(), "이름이 입력되었습니다. " + name, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -120,6 +120,8 @@ public class MainActivity extends AppCompatActivity {
         if(!isLocationServiceRunning()) {
             Intent intent = new Intent(getApplicationContext(), LocationService.class);
             intent.setAction(Constants.ACTION_START_LOCATION_SERVICE);
+            intent.putExtra("name", name);
+            startService(intent);
             startService(intent);
             Toast.makeText(this, "Location Service Started", Toast.LENGTH_SHORT).show();
         }

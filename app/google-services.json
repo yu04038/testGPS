@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "210690294758",
+    "project_id": "testgps-18cc3",
+    "storage_bucket": "testgps-18cc3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:210690294758:android:026808bde99124e1550c27",
+        "android_client_info": {
+          "package_name": "com.example.test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "210690294758-fee30kk0nvbgtdjil5jqarf6vosfs9md.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.test",
+            "certificate_hash": "948c00ad1199d170d75dd3a49c62011d55fc9908"
+          }
+        },
+        {
+          "client_id": "210690294758-tg9rfjephq1ogbvld4nbneprj6vkrgbm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYGE52Eg4RpnZDtJiKRQ-12d5ZTejeyZY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "210690294758-tg9rfjephq1ogbvld4nbneprj6vkrgbm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
