@@ -48,7 +48,7 @@ public class LocationService extends Service {
             if (locationResult != null && locationResult.getLastLocation() != null) {
                 double latitude = locationResult.getLastLocation().getLatitude();
                 double longitude = locationResult.getLastLocation().getLongitude();
-                String speed = String.valueOf(locationResult.getLastLocation().getSpeed()) + " km/h";
+                double speed = locationResult.getLastLocation().getSpeed();
 
                 Log.e("LOCATION_UPDATE", latitude + ", " + longitude + ", " + speed + ", " + name);
 
@@ -56,6 +56,8 @@ public class LocationService extends Service {
                 input.put("latitude", latitude);
                 input.put("longitude", longitude);
                 input.put("name", name);
+                input.put("speed", speed);
+
 
                 Retrofit retrofit = new Retrofit.Builder()
                         .baseUrl("http://3.38.11.108:8080")

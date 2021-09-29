@@ -13,6 +13,9 @@ public class Location {
     @SerializedName("name")
     private String name;
 
+    @SerializedName("speed")
+    private double speed;
+
     @SerializedName("success")
     private boolean success;
 
@@ -39,6 +42,8 @@ public class Location {
         return status;
     }
 
+    public double getSpeed() {return speed;}
+
     public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
@@ -58,4 +63,6 @@ public class Location {
     public void setStatus(int status) {
         this.status = status;
     }
+
+    public void setSpeed(double speed) { this.speed = speed;}
 }
