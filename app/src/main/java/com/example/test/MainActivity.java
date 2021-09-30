@@ -35,6 +35,13 @@ import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -57,7 +64,61 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 name = etName.getText().toString();
 
-                Toast.makeText(getApplicationContext(), "이름이 입력되었습니다. " + name, Toast.LENGTH_SHORT).show();
+                HashMap<String, Object> input = new HashMap<>();
+                input.put("name", name);
+
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl("http://3.38.11.108:8080")
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+                RetrofitApi retrofitApi = retrofit.create(RetrofitApi.class);
+
+                retrofitApi.postExistName(input).enqueue(new Callback<ExistName>() {
+                    @Override
+                    public void onResponse(Call<ExistName> call, Response<ExistName> response) {
+                        ExistName data = response.body();
+
+                        if(response.isSuccessful()) {
+                            Log.e("ExistName", "Post 성공");
+                            Log.e("ExistName", data.getData());
+
+                            if (data.getData().equals("해당 이름의 user가 존재하지 않습니다.")) {
+                                HashMap<String, Object> input2 = new HashMap<>();
+                                input2.put("name", name);
+
+                                Retrofit retrofit = new Retrofit.Builder()
+                                        .baseUrl("http://3.38.11.108:8080")
+                                        .addConverterFactory(GsonConverterFactory.create())
+                                        .build();
+                                RetrofitApi retrofitApi2 = retrofit.create(RetrofitApi.class);
+
+                                retrofitApi2.postName(input2).enqueue(new Callback<Name>() {
+                                    @Override
+                                    public void onResponse(Call<Name> call, Response<Name> response) {
+                                        Name data = response.body();
+                                        if(response.isSuccessful()) {
+                                            Log.e("Name", String.valueOf(data.isSuccess()));
+                                            Log.e("Name", String.valueOf(data.getStatus()));
+                                            Toast.makeText(MainActivity.this, name + "등록 완료", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<Name> call, Throwable t) {
+
+                                    }
+                                });
+                            } else {
+                                Log.e("Name", "있는 이름임");
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ExistName> call, Throwable t) {
+
+                    }
+                });
             }
         });
 

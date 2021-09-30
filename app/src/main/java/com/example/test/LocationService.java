@@ -71,9 +71,10 @@ public class LocationService extends Service {
                     public void onResponse(Call<Location> call, Response<Location> response) {
                         Location data = response.body();
                         if (response.isSuccessful()) {
-                            Log.e("Test", "Post 성공");
+                            Log.e("location", "Post 성공");
+                            Log.e("location", data.getData().createdAt);
+                        } else {
                         }
-                        Log.e("Test", String.valueOf(data.getStatus()));
                     }
 
                     @Override

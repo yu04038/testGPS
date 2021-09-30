@@ -22,6 +22,54 @@ public class Location {
     @SerializedName("status")
     private int status;
 
+    @SerializedName("data")
+    private Data data;
+
+    public class Data {
+        @SerializedName("id")
+        int id;
+
+        @SerializedName("name")
+        String name;
+
+        @SerializedName("latitude")
+        double latitude;
+
+        @SerializedName("longitude")
+        double longitude;
+
+        @SerializedName("createdAt")
+        String createdAt;
+
+        public int getId() { return id; }
+
+        public void setId(int id) { this.id = id; }
+
+        public String getNameData() {return name;}
+
+        public void setNameData(String name) {
+            this.name = name;
+        }
+
+        public double getLatitude() {return latitude;}
+
+        public void setLatitude(double latitude) {
+            this.latitude = latitude;
+        }
+
+        public double getLongitude() { return longitude;}
+
+        public void setLongitude(double longitude) { this.longitude = longitude;}
+
+        public String getCreatedAt() { return createdAt; }
+
+        public void setCreatedAt(String createdAt) { this.createdAt = createdAt;}
+    }
+
+    public Data getData() {
+        return data;
+    }
+
     public double getLatitude() {
         return latitude;
     }

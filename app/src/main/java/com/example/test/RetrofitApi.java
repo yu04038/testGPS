@@ -12,4 +12,10 @@ public interface RetrofitApi {
 
     @POST("/location")
     Call<Location> postData(@Body HashMap<String, Object> param);
+
+    @POST("/user")
+    Call<Name> postName(@Body HashMap<String, Object> param);
+
+    @POST("/user/exist")
+    Call<ExistName> postExistName(@Body HashMap<String, Object> param);
 }
