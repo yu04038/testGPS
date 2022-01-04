@@ -95,7 +95,7 @@ public class LocationService extends Service {
         String channelId = "location_notification_channel";
 
         // NotificationManager로 알람을 관리한다
-        // 객체 생
+        // 객체 생성
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         Intent resultIntent = new Intent();
@@ -111,13 +111,6 @@ public class LocationService extends Service {
                 getApplicationContext(),
                 channelId
         );
-        builder.setSmallIcon(R.mipmap.ic_launcher); // 설정한 작은 아이콘
-        builder.setContentTitle("Location Service"); // 설정한 제목
-        builder.setDefaults(NotificationCompat.DEFAULT_ALL); // 기본 설정
-        builder.setContentText("Running"); // 설정한 세부 텍스트
-        builder.setContentIntent(pendingIntent); // 실행할 작업이 담긴 PendingIntent
-        builder.setAutoCancel(false); // 터치하면 자동으로 지워지게 하는 것인데, false로 그렇게 못하게 해놓
-        builder.setPriority(NotificationCompat.PRIORITY_MAX);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (notificationManager != null
@@ -131,6 +124,14 @@ public class LocationService extends Service {
                 notificationManager.createNotificationChannel(notificationChannel);
             }
         }
+
+        builder.setSmallIcon(R.mipmap.ic_launcher); // 설정한 작은 아이콘
+        builder.setContentTitle("Location Service"); // 설정한 제목
+        builder.setDefaults(NotificationCompat.DEFAULT_ALL); // 기본 설정
+        builder.setContentText("Running"); // 설정한 세부 텍스트
+        builder.setContentIntent(pendingIntent); // 실행할 작업이 담긴 PendingIntent
+        builder.setAutoCancel(false); // 터치하면 자동으로 지워지게 하는 것인데, false로 그렇게 못하게 해놓
+        builder.setPriority(NotificationCompat.PRIORITY_MAX);
 
         //Initialize new location request
         LocationRequest locationRequest = new LocationRequest();
